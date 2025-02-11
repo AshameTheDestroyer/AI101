@@ -9,9 +9,10 @@ def PopulateHouseData():
         fields = ["size", "price"]
 
         writer.writerow(fields)
-        for i in range(1, 20):
+        for i in range(1, 40):
             size = randrange(i * 10, (i + 1) * 10) * randrange(1, 3)
             price = randrange(i * 10, (i + 10) * 10) * 10
+            price //= 2 if randrange(i, 40) > 30 else 1
             writer.writerow([size, price])
 
 def GetHouseData():
@@ -20,7 +21,7 @@ def GetHouseData():
         reader.__next__()
         return [[int(size), int(price)] for [size, price] in reader]
 
-def PlotModel(*, args: dict, W: list[float], alpha: float):
+def PlotModel(*, args: dict, W: list[float], alpha: float,  iteration: int = 10000):
     if (args.populate):
         PopulateHouseData()
 
@@ -29,7 +30,7 @@ def PlotModel(*, args: dict, W: list[float], alpha: float):
     X = np.array([x / 1000 for [x, _] in data])
     Y = np.array([y / 1000 for [_, y] in data])
 
-    while cost == None or abs(cost) >= 0.042:
+    for _ in range(iteration):
         Y_ = sum([W[i] * X ** i for i in range(len(W))])
         cost = sum([(Y_[i] - Y[i]) ** 2 for i in range(n)]) / (2 * n)
         print(cost, W)

@@ -12,7 +12,8 @@ def PopulateHouseData():
         minimum, maximum = 4, 60
         for i in range(minimum, maximum + 1):
             hours = i
-            passed = 1 if randrange(1, 10) > 8 else 1 if i > 30 else 0
+            passed = 1
+            passed &= 0 if i < (maximum - minimum) / 3 or i > (maximum - minimum) * 4 / 5 or randrange(1, 10) > 7 else 1
             writer.writerow([hours, passed])
 
 def GetStudentData():
@@ -21,7 +22,7 @@ def GetStudentData():
         reader.__next__()
         return [[int(hours), int(passed)] for [hours, passed] in reader]
 
-def PlotModel(*, args: dict, W: list[float], alpha: float):
+def PlotModel(*, args: dict, W: list[float], alpha: float, iteration: int = 10000):
     if (args.populate):
         PopulateHouseData()
 
@@ -30,7 +31,7 @@ def PlotModel(*, args: dict, W: list[float], alpha: float):
     X = np.array([x - np.median([x_ for [x_, _] in data]) for [x, _] in data])
     Y = np.array([y for [_, y] in data])
 
-    for _ in range(10000):
+    for _ in range(iteration):
         Y_ = 1 / (1 + np.exp(-sum([W[i] * X ** i for i in range(len(W))])))
         cost = sum([-Y[i] * np.log(Y_[i]) - (1 - Y[i]) * np.log(1 - Y_[i]) for i in range(n)]) / n
         print(cost, W)

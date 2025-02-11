@@ -1,8 +1,14 @@
 import argparse
-from LogisticRegression import PlotModel
+from LinearRegression import PlotModel as PlotLinearModel
+from LogisticRegression import PlotModel as PlotLogisticModel
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--model", type=str, default="")
 parser.add_argument("--populate", type=bool, default=False)
 args = parser.parse_args()
 
-PlotModel(args=args, W=[0, 1], alpha=0.001)
+match (args.model.lower()):
+    case "linear":
+        PlotLinearModel(args=args, W=[0, 1, 1, 1], alpha=1)
+    case "logistic":
+        PlotLogisticModel(args=args, W=[0, 1, 1], alpha=0.005)
