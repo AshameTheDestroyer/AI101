@@ -22,8 +22,8 @@ def GetStudentData():
         reader.__next__()
         return [[int(hours), int(passed)] for [hours, passed] in reader]
 
-def PlotModel(*, args: dict, W: list[float], alpha: float, iteration: int = 10000):
-    if (args.populate):
+def PlotModel(*, populate: bool, W: list[float], alpha: float, iteration: int = 10000):
+    if (populate):
         PopulateHouseData()
 
     data = GetStudentData()

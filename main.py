@@ -9,6 +9,6 @@ args = parser.parse_args()
 
 match (args.model.lower()):
     case "linear":
-        PlotLinearModel(args=args, W=[0, 1, 1, 1], alpha=1)
+        PlotLinearModel(populate=args.populate, W=[0, 1, 1, 1], alpha=1)
     case "logistic":
-        PlotLogisticModel(args=args, W=[0, 1, 1], alpha=0.005)
+        PlotLogisticModel(populate=args.populate, W=[0, 1, 1], alpha=0.001)

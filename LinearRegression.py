@@ -21,8 +21,8 @@ def GetHouseData():
         reader.__next__()
         return [[int(size), int(price)] for [size, price] in reader]
 
-def PlotModel(*, args: dict, W: list[float], alpha: float,  iteration: int = 10000):
-    if (args.populate):
+def PlotModel(*, populate: bool, W: list[float], alpha: float,  iteration: int = 10000):
+    if (populate):
         PopulateHouseData()
 
     data = GetHouseData()
