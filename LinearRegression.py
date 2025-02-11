@@ -1,7 +1,7 @@
 import csv
 import numpy as np
-from random import randrange
 import matplotlib.pyplot as plt
+from random import randrange, random
 
 def PopulateHouseData():
     with open("house_data.csv", "w", newline="") as file:
@@ -9,10 +9,11 @@ def PopulateHouseData():
         fields = ["size", "price"]
 
         writer.writerow(fields)
-        for i in range(1, 40):
-            size = randrange(i * 10, (i + 1) * 10) * randrange(1, 3)
-            price = randrange(i * 10, (i + 10) * 10) * 10
-            price //= 2 if randrange(i, 40) > 30 else 1
+        minimum, maximum = 1, 100
+        for i in range(minimum, maximum + 1):
+            size = randrange(i * 10, (i + 1) * 10)
+            price = (size - (maximum - minimum) * 5) ** 3
+            price *= randrange(1, 10)
             writer.writerow([size, price])
 
 def GetHouseData():
@@ -21,7 +22,7 @@ def GetHouseData():
         reader.__next__()
         return [[int(size), int(price)] for [size, price] in reader]
 
-def PlotModel(*, populate: bool, W: list[float], alpha: float,  iteration: int = 10000):
+def PlotModel(*, populate: bool, degrees: int, alpha: float,  iteration: int | None = 10000):
     if (populate):
         PopulateHouseData()
 
@@ -30,24 +31,30 @@ def PlotModel(*, populate: bool, W: list[float], alpha: float,  iteration: int =
     X = np.array([x / 1000 for [x, _] in data])
     Y = np.array([y / 1000 for [_, y] in data])
 
-    for _ in range(iteration):
-        Y_ = sum([W[i] * X ** i for i in range(len(W))])
+    degrees += 1
+    assert(degrees >= 1)
+    W = [random() for _ in range(degrees)]
+
+    for _ in range(iteration if iteration is not None else 0):
+        Y_ = sum([W[i] * X ** i for i in range(degrees)])
         cost = sum([(Y_[i] - Y[i]) ** 2 for i in range(n)]) / (2 * n)
-        print(cost, W)
+        print(cost)
+
         W_ = []
-        for wi in range(len(W)):
+        for wi in range(degrees):
             dw = sum([-(Y[i] - Y_[i]) * X[i] ** wi for i in range(n)]) / n
             W_.append(alpha * dw)
-        W = [W[i] - W_[i] for i in range(len(W))]
+        W = [W[i] - W_[i] for i in range(degrees)]
 
 
     X_ = np.linspace(0, max(X))
-    Y_ = sum([W[i] * X_ ** i for i in range(len(W))])
+    Y_ = sum([W[i] * X_ ** i for i in range(degrees)])
 
     plt.scatter(X, Y)
     plt.xlabel("Size")
     plt.ylabel("Price")
     plt.title("House Prices for Sizes")
     plt.grid(True)
-    plt.plot(X_, Y_)
+    if (iteration is not None):
+        plt.plot(X_, Y_)
     plt.show()

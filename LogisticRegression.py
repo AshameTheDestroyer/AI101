@@ -1,7 +1,7 @@
 import csv
 import numpy as np
-from random import randrange
 import matplotlib.pyplot as plt
+from random import randrange, random
 
 def PopulateHouseData():
     with open("student_data.csv", "w", newline="") as file:
@@ -22,7 +22,7 @@ def GetStudentData():
         reader.__next__()
         return [[int(hours), int(passed)] for [hours, passed] in reader]
 
-def PlotModel(*, populate: bool, W: list[float], alpha: float, iteration: int = 10000):
+def PlotModel(*, populate: bool, degrees: int, alpha: float, iteration: int = 10000):
     if (populate):
         PopulateHouseData()
 
@@ -31,18 +31,22 @@ def PlotModel(*, populate: bool, W: list[float], alpha: float, iteration: int = 
     X = np.array([x - np.median([x_ for [x_, _] in data]) for [x, _] in data])
     Y = np.array([y for [_, y] in data])
 
+    degrees += 1
+    assert(degrees >= 1)
+    W = [random() for _ in range(degrees)]
+
     for _ in range(iteration):
-        Y_ = 1 / (1 + np.exp(-sum([W[i] * X ** i for i in range(len(W))])))
+        Y_ = 1 / (1 + np.exp(-sum([W[i] * X ** i for i in range(degrees)])))
         cost = sum([-Y[i] * np.log(Y_[i]) - (1 - Y[i]) * np.log(1 - Y_[i]) for i in range(n)]) / n
         print(cost, W)
         W_ = []
-        for wi in range(len(W)):
+        for wi in range(degrees):
             dw = sum([-(Y[i] - Y_[i]) * X[i] ** wi for i in range(n)]) / n
             W_.append(alpha * dw)
-        W = [W[i] - W_[i] for i in range(len(W))]
+        W = [W[i] - W_[i] for i in range(degrees)]
 
     X_ = np.linspace(min(X), max(X))
-    Y_ = 1 / (1 + np.exp(-sum([W[i] * X_ ** i for i in range(len(W))])))
+    Y_ = 1 / (1 + np.exp(-sum([W[i] * X_ ** i for i in range(degrees)])))
 
     plt.scatter(X, Y)
     plt.xlabel("Hours")
