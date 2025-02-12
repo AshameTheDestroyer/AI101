@@ -38,7 +38,7 @@ def PlotModel(*, populate: bool, degrees: int, alpha: float, iteration: int = 10
     for _ in range(iteration):
         Y_ = 1 / (1 + np.exp(-sum([W[i] * X ** i for i in range(degrees)])))
         cost = sum([-Y[i] * np.log(Y_[i]) - (1 - Y[i]) * np.log(1 - Y_[i]) for i in range(n)]) / n
-        print(cost, W)
+        print(cost)
         W_ = []
         for wi in range(degrees):
             dw = sum([-(Y[i] - Y_[i]) * X[i] ** wi for i in range(n)]) / n
